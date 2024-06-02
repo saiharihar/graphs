@@ -1,0 +1,41 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+bool solve(vector<vector<int>>&adj,vector<bool>&visited,int n,int curr){
+    if(visited[curr]==true){
+        return true;
+    }
+    visited[curr]=true;
+    bool flag=false;
+    for(int i=0;i<adj[curr].size();i++){
+        flag=solve(adj,visited,n,adj[curr][i]);
+        if (flag==true){
+            return true;
+        }
+    }
+    return false;
+}
+bool iscyclic(vector<vector<int>>&adj,vector<bool>&visited,int n,int curr){
+    bool flag=false;
+    visited[curr]=true;
+    for(int i=0;i<adj[curr].size();i++){
+        flag=solve(adj,visited,n,curr);
+        if(flag==true){
+            return true;
+        }
+        visited[curr]=false;
+    }
+    return false;
+}
+int main(){
+    int n,e;
+    cin>>n>>e;
+    vector<vector<int>>adj(n);
+    for(int i=0;i<e;i++){
+        int v,u;
+        cin>>v>>u;
+        adj[v].push_back(u);
+    }
+    vector<bool>visited(n,false);
+    cout<<iscyclic(adj,visited,n,0);
+}

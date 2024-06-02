@@ -1,0 +1,39 @@
+class Solution {
+public:
+bool solve(int node,vector<int>&color,unordered_map<int,list<int>>&adj){
+    queue<int>q;
+    q.push(node);
+    color[node]=1;
+    while(!q.empty()){
+        int curr=q.front();
+        q.pop();
+        for(int neighbour:adj[curr]){
+            if(color[neighbour]==color[curr]){
+                return false;
+            }
+            if(color[neighbour]==-1){
+                color[neighbour]=1-color[curr];
+                q.push(neighbour);
+            }
+        }
+    }
+    return true;
+}
+    bool possibleBipartition(int n, vector<vector<int>>& dislikes) {
+        unordered_map<int,list<int>>adj;
+        int N=dislikes.size();
+        if(N==0) return true;
+        int m=dislikes[0].size();
+        for(auto edge:dislikes){
+            adj[edge[0]].push_back(edge[1]);
+            adj[edge[1]].push_back(edge[0]);
+        }
+        vector<int>color(n+1,-1);
+        for(int i=0;i<n;i++){
+            if(color[i]==-1){
+                if(solve(i,color,adj)==false) return false;
+            }
+        }
+        return true;
+    }
+};
