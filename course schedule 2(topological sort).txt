@@ -1,0 +1,64 @@
+class Solution {
+public:
+    bool solve(vector<vector<int>>&adj,vector<int>&vis,int v){
+        if(vis[v]==1){
+            return true;
+        }
+        if(vis[v]==2){
+            return false;
+        }
+        vis[v]=1;
+        for(int i=0;i<adj[v].size();i++){
+            if(solve(adj,vis,adj[v][i])){
+                return true;
+            }
+        }
+        vis[v]=2;
+        return false;
+    }
+    bool detectcycle(vector<vector<int>>&adj,int n){
+        vector<int>vis(n,0);
+        for(int i=0;i<n;i++){
+            if(!vis[i]){
+                if(solve(adj,vis,i)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    void dfs(vector<vector<int>>&adj,vector<bool>&visited,int v,stack<int>&s){
+        visited[v]=true;
+        for(int i=0;i<adj[v].size();i++){
+            if(!visited[adj[v][i]]){
+                dfs(adj,visited,adj[v][i],s);
+            }
+        }
+        s.push(v);
+    }
+
+    vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) {
+        int n=prerequisites.size();
+        vector<vector<int>>adj(numCourses);
+        for(int i=0;i<n;i++){
+            adj[prerequisites[i][1]].push_back(prerequisites[i][0]);
+        }
+        vector<int>ans;
+        if(detectcycle(adj,numCourses)){
+            return ans;
+        }
+        stack<int>s;
+        vector<bool>visited(numCourses,false);
+        for(int i=0;i<numCourses;i++){
+            if(!visited[i]){
+                dfs(adj,visited,i,s);
+            }
+        }
+        while(!s.empty()){
+            ans.push_back(s.top());
+            s.pop();
+        }
+        return ans;
+    }
+};
