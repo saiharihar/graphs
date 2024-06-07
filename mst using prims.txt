@@ -1,0 +1,49 @@
+#include<iostream>
+#include<string>
+#include<climits>
+#include<vector>
+using namespace std;
+int select_min_vertex(vector<bool>&set_mst,vector<int>value,int n){
+    int min_value=INT_MAX;
+    int vertex;
+    for(int i=0;i<n;i++){
+        if(set_mst[i]==false && value[i]<min_value){
+            min_value=value[i];
+            vertex=i;
+        }
+    }
+    return vertex;
+}
+
+void mst(vector<vector<int>>&graph,int n){
+    vector<int>parent(n,-1);
+    vector<bool>set_mst(n,false);
+    vector<int>value(n,INT_MAX);
+    value[0]=0;
+    for(int i=0;i<n-1;i++){
+        int u=select_min_vertex(set_mst,value,n);
+        set_mst[u]=true;
+        for(int j=0;j<n;j++){
+            if(graph[u][j]!=0 && set_mst[j]==false && graph[u][j]<value[j]){
+                value[j]=graph[u][j];
+                parent[j]=u;
+            }
+        }
+    }
+    for(int i=1;i<n;i++){
+        cout<<parent[i]<<"->"<<i<<"wt= "<<graph[parent[i]][i]<<endl;
+    }
+    
+}
+
+int main(){
+    int n;
+    cin>>n;
+    vector<vector<int>>graph(n,vector<int>(n));
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            cin>>graph[i][j];
+        }
+    }
+    mst(graph,n);
+}
