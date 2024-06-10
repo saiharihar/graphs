@@ -1,0 +1,93 @@
+#include<iostream>
+#include<vector>
+#include<algorithm>
+using namespace std;
+class node{
+    public:
+    int parent;
+    int rank;
+};
+class edge{
+    public:
+    int src;
+    int dest;
+    int wt;
+};
+vector<node>ds;
+vector<edge>mst;
+int find(int n){
+    if(ds[n].parent==-1){
+        return n;
+    }
+    return ds[n].parent=find(ds[n].parent);
+}
+
+void union_(int fromP,int toP){
+    if(ds[fromP].rank>ds[toP].rank){
+        ds[toP].parent=fromP;
+    }
+    else if(ds[fromP].rank<ds[toP].rank){
+        ds[fromP].parent=toP;
+    }
+    else{
+        ds[fromP].parent=toP;
+        ds[toP].rank+=1;
+    }
+    return;
+}
+bool cycle(vector<pair<int,int>>&adj){
+    for(auto p:adj){
+        int fromP=find(p.first);
+        int toP=find(p.second);
+        if(fromP==toP){
+            return true;
+        }
+        union_(fromP,toP);
+    }
+    return false;
+}
+bool comparator(edge a,edge b){
+    return a.wt<b.wt;
+}
+
+void krushkals(vector<edge>&adj,int n,int e){
+    sort(adj.begin(),adj.end(),comparator);
+    int i=0,j=0;
+    while(j<e && i<n-1){
+        int fromP=find(adj[j].src);
+        int toP=find(adj[j].dest);
+        if(fromP==toP){
+            j++;
+            continue;
+        }
+        union_(fromP,toP);
+        mst.push_back(adj[j]);
+        i++;
+    }
+}
+void printmst(vector<edge>&mst){
+    for(auto p:mst){
+        cout<<"src :"<<p.src<<" dest :"<<p.dest<<" wt :"<<p.wt<<endl;
+    }
+}
+int main(){
+    int n,e;
+    cin>>n>>e;
+    ds.resize(n);
+    for(int i=0;i<n;i++){
+        ds[i].parent=-1;
+        ds[i].rank=0;
+    }
+    vector<edge>adj;
+    edge temp;
+    for(int i=0;i<e;i++){
+        int u,v,wt;
+        cin>>u>>v>>wt;
+        temp.src=u;
+        temp.dest=v;
+        temp.wt=wt;
+        adj.push_back(temp);
+    }
+    krushkals(adj,n,e);
+    printmst(mst);
+}

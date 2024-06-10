@@ -1,0 +1,61 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+class node{
+    public:
+    int parent;
+    int rank;
+};
+vector<node>ds;
+int find(int n){
+    if(ds[n].parent==-1){
+        return n;
+    }
+    return ds[n].parent=find(ds[n].parent);
+}
+
+void union_(int fromP,int toP){
+    if(ds[fromP].rank>ds[toP].rank){
+        ds[toP].parent=fromP;
+    }
+    else if(ds[fromP].rank<ds[toP].rank){
+        ds[fromP].parent=toP;
+    }
+    else{
+        ds[fromP].parent=toP;
+        ds[toP].rank+=1;
+    }
+    return;
+}
+bool cycle(vector<pair<int,int>>&adj){
+    for(auto p:adj){
+        int fromP=find(p.first);
+        int toP=find(p.second);
+        if(fromP==toP){
+            return true;
+        }
+        union_(fromP,toP);
+    }
+    return false;
+}
+int main(){
+    int n,e;
+    cin>>n>>e;
+    ds.resize(n);
+    for(int i=0;i<n;i++){
+        ds[i].parent=-1;
+        ds[i].rank=0;
+    }
+    vector<pair<int,int>>adj;
+    for(int i=0;i<e;i++){
+        int u,v;
+        cin>>u>>v;
+        adj.push_back({u,v});
+    }
+    if(cycle(adj)){
+        cout<<"cycle exists"<<endl;
+    }
+    else{
+        cout<<"no cyccle exists"<<endl;
+    }
+}
