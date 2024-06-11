@@ -1,0 +1,66 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+class edge {
+public:
+    int src, dest, wt;
+};
+
+int v, e;
+
+void bellmanford(vector<edge> &adj) {
+    vector<int> parent(v, -1); 
+    vector<int> value(v, INT_MAX); 
+    value[0] = 0; 
+    
+    bool updated;
+    for (int i = 0; i < v - 1; i++) {
+        updated = false;
+        for (int j = 0; j < e; j++) {
+            int u = adj[j].src;
+            int v = adj[j].dest;
+            int wt = adj[j].wt;
+            if (value[u] != INT_MAX && value[u] + wt < value[v]) {
+                value[v] = value[u] + wt;
+                parent[v] = u;
+                updated = true;
+            }
+        }
+        if (!updated) {
+            break;
+        }
+    }
+
+    for (int j = 0; j < e; j++) {
+        int u = adj[j].src;
+        int v = adj[j].dest;
+        int wt = adj[j].wt;
+        if (value[u] != INT_MAX && value[u] + wt < value[v]) {
+            cout << "Graph contains negative weight cycle" << endl;
+            return;
+        }
+    }
+    for (int i = 0; i < v; i++) {
+        if (value[i] == INT_MAX) {
+            cout << "Vertex " << i << " is unreachable" << endl;
+        } else {
+            cout << "Distance from source to vertex " << i << " is " << value[i] << endl;
+        }
+    }
+}
+
+int main() {
+    cout << "Enter number of vertices and edges:" << endl;
+    cin >> v >> e;
+    vector<edge> adj(e);
+    int src, dest, wt;
+    cout << "Enter each edge (src dest wt):" << endl;
+    for (int i = 0; i < e; i++) {
+        cin >> src >> dest >> wt;
+        adj[i].src = src;
+        adj[i].dest = dest;
+        adj[i].wt = wt;
+    }
+    bellmanford(adj);
+    return 0;
+}
