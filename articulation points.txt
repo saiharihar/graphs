@@ -1,0 +1,65 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+unordered_map<int, vector<int>> adj;
+int v, e;
+
+void dfs(int u, vector<int>& low, vector<int>& dis, vector<int>& parent, vector<bool>&ap) {
+    static int time = 0;
+    dis[u] = low[u] = time++;
+    int children=0;
+
+    for (int V : adj[u]) {
+        if (dis[V] == -1) {
+            children++;
+            parent[V]=u;
+            dfs(V, low, dis,parent,ap);
+            low[u] = min(low[u], low[V]);
+            if(parent[u]==-1 && children>1){
+                ap[u]=true;
+            }
+            if(parent[u]!=-1 && low[V]>=dis[u]){
+                ap[u]=true;
+            }
+        }
+        else if(V!=parent[u]){
+            low[u]=min(low[u],dis[V]);
+        }
+    }
+}
+
+void tarjans() {
+    vector<int> low(v, -1);
+    vector<int> dis(v, -1);
+    vector<int> parent(v,-1);
+    vector<bool>ap(v,false);
+
+    for (int i = 0; i < v; i++) {
+        if (dis[i] == -1) {
+            dfs(i, low, dis, parent, ap);
+        }
+    }
+    
+    for(int i=0;i<v;i++){
+        if(ap[i]==true){
+            cout<<i<<" ";
+        }
+    }
+}
+
+int main() {
+    cout << "Enter number of nodes and edges:" << endl;
+    cin >> v >> e;
+    cout << "Enter edges:" << endl;
+
+    for (int i = 0; i < e; i++) {
+        int u, v;
+        cin >> u >> v;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+
+    tarjans();
+
+    return 0;
+}

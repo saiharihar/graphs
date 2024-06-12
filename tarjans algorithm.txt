@@ -1,0 +1,63 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+unordered_map<int, vector<int>> adj;
+int v, e;
+
+void dfs(int u, vector<int>& low, vector<int>& dis, vector<bool>& present_in_stack, stack<int>& s) {
+    static int time = 0;
+    dis[u] = low[u] = time++;
+    s.push(u);
+    present_in_stack[u] = true;
+
+    for (int V : adj[u]) {
+        if (dis[V] == -1) {
+            dfs(V, low, dis, present_in_stack, s);
+            low[u] = min(low[u], low[V]);
+        } else if (present_in_stack[V]) {
+            low[u] = min(low[u], dis[V]);
+        }
+    }
+
+    if (low[u] == dis[u]) {
+        cout << "SCC is ";
+        while (s.top() != u) {
+            cout << s.top() << " ";
+            present_in_stack[s.top()] = false;
+            s.pop();
+        }
+        cout << s.top() << " ";
+        present_in_stack[s.top()] = false;
+        s.pop();
+        cout << endl;
+    }
+}
+
+void tarjans() {
+    vector<int> low(v, -1);
+    vector<int> dis(v, -1);
+    vector<bool> present_in_stack(v, false);
+    stack<int> s;
+
+    for (int i = 0; i < v; i++) {
+        if (dis[i] == -1) {
+            dfs(i, low, dis, present_in_stack, s);
+        }
+    }
+}
+
+int main() {
+    cout << "Enter number of nodes and edges:" << endl;
+    cin >> v >> e;
+    cout << "Enter edges:" << endl;
+
+    for (int i = 0; i < e; i++) {
+        int u, v;
+        cin >> u >> v;
+        adj[u].push_back(v);
+    }
+
+    tarjans();
+
+    return 0;
+}
