@@ -1,0 +1,51 @@
+#include<bits/stdc++.h>
+using namespace std;
+int v,e;
+unordered_map<int,vector<int>>adj;
+
+void dfs(int u,vector<int>&parent,vector<int>&low,vector<int>&dis,vector<pair<int,int>>&sol){
+    static int time=0;
+    low[u]=dis[u]=time;
+    time+=1;
+    for(int V:adj[u]){
+        if(dis[V]==-1){
+            parent[V]=u;
+            dfs(V,parent,low,dis,sol);
+            low[u]=min(low[u],low[V]);
+            
+            if(low[V]>dis[u]){
+                sol.push_back({u,V});
+            }
+        }
+        else if(V!=parent[u]){
+            low[u]=min(low[u],dis[V]);
+        }
+    }
+}
+void bridges(){
+    vector<int>parent(v,-1);
+    vector<int>low(v,-1);
+    vector<int>dis(v,-1);
+    vector<pair<int,int>>sol;
+    for(int i=0;i<v;i++){
+        if(dis[i]==-1){
+            dfs(i,parent,low,dis,sol);
+        }
+    }
+    cout<<"bridges are"<<endl;
+    for(auto i:sol){
+        cout<<i.first<<"->"<<i.second<<endl;
+    }
+}
+int main(){
+    cout<<" enter no of vertices and edges"<<endl;
+    cin>>v>>e;
+    cout<<"enter the edges"<<endl;
+    for(int i=0;i<e;i++){
+        int u,v;
+        cin>>u>>v;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+    bridges();
+}
