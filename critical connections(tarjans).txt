@@ -1,0 +1,41 @@
+class Solution {
+public:
+unordered_map<int,vector<int>>adj;
+void dfs(int u,vector<int>&dis,vector<int>&parent,vector<int>&low,vector<vector<int>>&bridges){
+    static int time=0;
+    dis[u]=low[u]=time;
+    time+=1;
+    for(auto v:adj[u]){
+        if(dis[v]==-1){
+            parent[v]=u;
+            dfs(v,dis,parent,low,bridges);
+            low[u]=min(low[u],low[v]);
+            if(low[v]>dis[u]){
+                bridges.push_back(vector<int>({u,v}));
+            }
+        }
+        else if(v!=parent[u]){
+            low[u]=min(low[u],dis[v]);
+        }
+    }
+}
+
+    void tarjans(int n,vector<vector<int>>&bridges){
+        vector<int>dis(n,-1),parent(n,-1),low(n,-1);
+        for(int i=0;i<n;i++){
+            if(dis[i]==-1){
+                dfs(i,dis,parent,low,bridges);
+            }
+        }
+    }
+
+    vector<vector<int>> criticalConnections(int n, vector<vector<int>>& connections) {
+        for(int i=0;i<connections.size();i++){
+            adj[connections[i][0]].push_back(connections[i][1]);
+            adj[connections[i][1]].push_back(connections[i][0]);
+        }
+         vector<vector<int>>bridges;
+        tarjans(n,bridges);
+        return bridges;
+    }
+};
